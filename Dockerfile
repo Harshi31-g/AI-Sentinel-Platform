@@ -6,6 +6,7 @@ COPY lib/ ./lib/
 COPY artifacts/security-platform/ ./artifacts/security-platform/
 
 RUN npm install -g pnpm && \
+    pnpm config set only-built-dependencies esbuild && \
     pnpm install --no-frozen-lockfile && \
     pnpm --filter @workspace/api-spec run codegen && \
     cd artifacts/security-platform && \
