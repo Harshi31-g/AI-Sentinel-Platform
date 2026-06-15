@@ -6,8 +6,8 @@ COPY lib/ ./lib/
 COPY artifacts/security-platform/ ./artifacts/security-platform/
 
 RUN npm install -g pnpm && \
-    pnpm config set only-built-dependencies esbuild && \
-    pnpm install --no-frozen-lockfile && \
+    pnpm install --no-frozen-lockfile --ignore-scripts=false && \
+    pnpm rebuild esbuild && \
     pnpm --filter @workspace/api-spec run codegen && \
     cd artifacts/security-platform && \
     PORT=3000 BASE_PATH=/ pnpm run build
