@@ -1,0 +1,2 @@
+- [SentinelAI routing](sentinelai-routing.md) — Python FastAPI proxied through Node.js api-server; pathRewrite adds /api/v1 prefix back
+- [SentinelAI camelCase](sentinelai-camelcase.md) — FastAPI uses CamelJSONResponse + Pydantic alias_generator=to_camel; tests use camelCase keys

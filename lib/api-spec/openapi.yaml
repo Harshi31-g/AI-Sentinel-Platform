@@ -3,13 +3,21 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: AI Security Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: resources
+    description: AI resource management
+  - name: scans
+    description: Security scan operations
+  - name: activity
+    description: Activity log operations
+  - name: dashboard
+    description: Dashboard and analytics
 paths:
   /healthz:
     get:
@@ -24,6 +32,281 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /v1/resources:
+    get:
+      operationId: listResources
+      tags: [resources]
+      summary: List all resources
+      responses:
+        "200":
+          description: List of resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Resource"
+    post:
+      operationId: createResource
+      tags: [resources]
+      summary: Create a new resource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resource"
+
+  /v1/resources/{id}:
+    get:
+      operationId: getResource
+      tags: [resources]
+      summary: Get resource by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resource"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteResource
+      tags: [resources]
+      summary: Delete resource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /v1/resources/{id}/validate:
+    post:
+      operationId: validateResource
+      tags: [resources]
+      summary: Validate a resource connection
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationResult"
+
+  /v1/resources/{id}/scan:
+    post:
+      operationId: startScan
+      tags: [scans]
+      summary: Start a security scan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScanRequest"
+      responses:
+        "202":
+          description: Scan started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanJob"
+
+  /v1/resources/{id}/scans:
+    get:
+      operationId: listScans
+      tags: [scans]
+      summary: List scan results for a resource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Scan results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScanResult"
+
+  /v1/resources/{id}/activity:
+    get:
+      operationId: getResourceActivity
+      tags: [activity]
+      summary: Get activity log for a resource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Activity log
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLog"
+
+  /v1/scans/{scanId}:
+    get:
+      operationId: getScan
+      tags: [scans]
+      summary: Get a specific scan result
+      parameters:
+        - name: scanId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Scan result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanResult"
+
+  /v1/findings:
+    get:
+      operationId: listFindings
+      tags: [scans]
+      summary: List all findings across all resources
+      parameters:
+        - name: severity
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: All findings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScanResult"
+
+  /v1/activity:
+    get:
+      operationId: listActivity
+      tags: [activity]
+      summary: Get global activity feed
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Activity feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLog"
+
+  /v1/dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard KPI summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /v1/dashboard/trends:
+    get:
+      operationId: getSecurityTrends
+      tags: [dashboard]
+      summary: Get security score trends and scan volume over time
+      responses:
+        "200":
+          description: Trend data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SecurityTrends"
+
+  /v1/dashboard/vulnerability-distribution:
+    get:
+      operationId: getVulnerabilityDistribution
+      tags: [dashboard]
+      summary: Get vulnerability distribution by category
+      responses:
+        "200":
+          description: Vulnerability distribution
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VulnCategory"
+
+  /v1/attack-templates:
+    get:
+      operationId: listAttackTemplates
+      tags: [scans]
+      summary: List available attack templates
+      responses:
+        "200":
+          description: Attack templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttackTemplate"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +317,233 @@ components:
       required:
         - status
 
+    Resource:
+      type: object
+      required: [id, accountName, resourceName, webhookId, userId, validationStatus, createdAt]
+      properties:
+        id:
+          type: integer
+        accountName:
+          type: string
+        resourceName:
+          type: string
+        webhookId:
+          type: string
+        userId:
+          type: string
+        description:
+          type: ["string", "null"]
+        validationStatus:
+          type: string
+          enum: [pending, valid, invalid, unknown]
+        lastValidated:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        securityScore:
+          type: ["number", "null"]
+        riskLevel:
+          type: ["string", "null"]
+          enum: [critical, high, medium, low, null]
+        lastScanAt:
+          type: ["string", "null"]
+        avgLatencyMs:
+          type: ["number", "null"]
+        totalScans:
+          type: ["integer", "null"]
+        totalFindings:
+          type: ["integer", "null"]
+
+    ResourceInput:
+      type: object
+      required: [accountName, resourceName, webhookId, userId]
+      properties:
+        accountName:
+          type: string
+          minLength: 1
+        resourceName:
+          type: string
+          minLength: 1
+        webhookId:
+          type: string
+          minLength: 1
+        encryptionKey:
+          type: string
+        userId:
+          type: string
+          minLength: 1
+        description:
+          type: string
+
+    ValidationResult:
+      type: object
+      required: [success, message, resourceId]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        resourceId:
+          type: integer
+        metadata:
+          type: ["object", "null"]
+          additionalProperties: true
+
+    ScanRequest:
+      type: object
+      properties:
+        attackIds:
+          type: array
+          items:
+            type: string
+
+    ScanJob:
+      type: object
+      required: [jobId, resourceId, status, startedAt]
+      properties:
+        jobId:
+          type: string
+        resourceId:
+          type: integer
+        status:
+          type: string
+        startedAt:
+          type: string
+        estimatedDurationMs:
+          type: integer
+
+    ScanResult:
+      type: object
+      required: [id, resourceId, attackId, prompt, response, severity, riskScore, status, createdAt]
+      properties:
+        id:
+          type: integer
+        resourceId:
+          type: integer
+        vulnerabilityId:
+          type: ["string", "null"]
+        attackId:
+          type: string
+        attackName:
+          type: ["string", "null"]
+        prompt:
+          type: string
+        response:
+          type: string
+        severity:
+          type: string
+          enum: [critical, high, medium, low]
+        riskScore:
+          type: integer
+        latencyMs:
+          type: ["integer", "null"]
+        status:
+          type: string
+          enum: [completed, failed, timeout]
+        findings:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+
+    ActivityLog:
+      type: object
+      required: [id, eventType, message, createdAt]
+      properties:
+        id:
+          type: integer
+        resourceId:
+          type: ["integer", "null"]
+        resourceName:
+          type: ["string", "null"]
+        eventType:
+          type: string
+        message:
+          type: string
+        severity:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    DashboardSummary:
+      type: object
+      required: [connectedAgents, validatedResources, activeScans, totalFindings, avgLatencyMs, securityScore, successRate, criticalCount, highCount, mediumCount, lowCount]
+      properties:
+        connectedAgents:
+          type: integer
+        validatedResources:
+          type: integer
+        activeScans:
+          type: integer
+        totalFindings:
+          type: integer
+        avgLatencyMs:
+          type: number
+        securityScore:
+          type: number
+        successRate:
+          type: number
+        criticalCount:
+          type: integer
+        highCount:
+          type: integer
+        mediumCount:
+          type: integer
+        lowCount:
+          type: integer
+
+    SecurityTrends:
+      type: object
+      required: [scoreHistory, scanVolume, latencyTrend]
+      properties:
+        scoreHistory:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendPoint"
+        scanVolume:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendPoint"
+        latencyTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendPoint"
+
+    TrendPoint:
+      type: object
+      required: [date, value]
+      properties:
+        date:
+          type: string
+        value:
+          type: number
+
+    VulnCategory:
+      type: object
+      required: [category, count, percentage]
+      properties:
+        category:
+          type: string
+        count:
+          type: integer
+        percentage:
+          type: number
+
+    AttackTemplate:
+      type: object
+      required: [id, name, description, category, prompt, severity]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        prompt:
+          type: string
+        severity:
+          type: string
+          enum: [critical, high, medium, low]

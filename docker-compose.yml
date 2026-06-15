@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - DATABASE_URL=sqlite:////data/sentinelai.db
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+    volumes:
+      - sentinelai_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # Development: run backend + vite frontend separately
+  api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - DATABASE_URL=sqlite:///./sentinelai.db
+      - ENVIRONMENT=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./backend:/app/backend
+    command: sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    profiles:
+      - dev
+
+volumes:
+  sentinelai_data:
