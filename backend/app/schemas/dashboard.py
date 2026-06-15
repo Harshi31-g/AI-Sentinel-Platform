@@ -11,6 +11,7 @@ class DashboardSummary(CamelModel):
     connected_agents: int
     validated_resources: int
     active_scans: int
+    total_scans: int
     total_findings: int
     avg_latency_ms: float
     security_score: float

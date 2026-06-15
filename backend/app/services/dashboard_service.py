@@ -48,6 +48,7 @@ class DashboardService:
             connected_agents=total_resources,
             validated_resources=validated,
             active_scans=0,
+            total_scans=len(scans),
             total_findings=total_findings,
             avg_latency_ms=round(avg_latency, 1),
             security_score=round(security_score, 1),

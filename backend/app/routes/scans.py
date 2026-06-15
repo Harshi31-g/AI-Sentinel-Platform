@@ -2,9 +2,9 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.schemas.scan import ScanJob, ScanRequest, ScanResultOut
+from app.schemas.scan import ScanJob, ScanRequest, ScanResultOut, JobStatus
 from app.schemas.activity import ActivityLogOut
-from app.services.scan_service import ScanService
+from app.services.scan_service import ScanService, _active_scans
 from app.services.attack_library import ATTACK_TEMPLATES
 from app.schemas.attack import AttackTemplate
 
