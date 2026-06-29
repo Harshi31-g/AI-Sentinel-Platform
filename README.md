@@ -188,11 +188,7 @@ GET    /api/v1/dashboard/vulnerability-distribution  Vuln breakdown
 
 ---
 
-## Screenshots
 
-*Add screenshots here after deployment*
-
----
 
 ## Stack
 
