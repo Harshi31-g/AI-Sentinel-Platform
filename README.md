@@ -195,3 +195,4 @@ GET    /api/v1/dashboard/vulnerability-distribution  Vuln breakdown
 **Backend**: Python 3.11 · FastAPI · SQLAlchemy · SQLite · Pydantic · httpx · structlog  
 **Frontend**: React · Vite · TypeScript · TailwindCSS · Shadcn/UI · React Query · Recharts · Framer Motion  
 **Deployment**: Docker · Render · docker-compose
+---
